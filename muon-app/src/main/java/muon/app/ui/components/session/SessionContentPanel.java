@@ -100,7 +100,7 @@ public class SessionContentPanel extends JPanel implements PageHolder, CachedCre
 		processViewer = new ProcessViewer(this);
 		utilityPage = new UtilityPage(this);
 
-		Page[] pageArr = new Page[] { fileBrowser, terminalHolder, logViewer, searchPanel, diskspaceAnalyzer,
+		Page[] pageArr = new Page[] { terminalHolder, fileBrowser, logViewer, searchPanel, diskspaceAnalyzer,
 				processViewer, utilityPage };
 
 //		JPanel[] panels = {
