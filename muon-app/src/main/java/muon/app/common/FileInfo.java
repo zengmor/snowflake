@@ -23,10 +23,17 @@ public class FileInfo implements Serializable, Comparable<FileInfo> {
 	private String user;
 	private boolean hidden;
 
-	public FileInfo(String name, String path, long size, FileType type,
-			long lastModified, int permission, String protocol,
-			String permissionString, long created, String extra,
-			boolean hidden) {
+	public FileInfo(final String name,
+					final String path,
+					final long size,
+					final FileType type,
+					final long lastModified,
+					final int permission,
+					final String protocol,
+					final String permissionString,
+					final long created,
+					final String extra,
+					final boolean hidden) {
 		super();
 		this.name = name;
 		this.path = path;
@@ -97,12 +104,7 @@ public class FileInfo implements Serializable, Comparable<FileInfo> {
 	}
 
 	@Override
-	public String toString() {
-		return name;
-
-//		"FileInfo [name=" + name + ", path=" + path + ", size=" + size
-//				+ ", type=" + type + ", lastModified=" + lastModified + "]";
-	}
+	public String toString() { return name; }
 
 	public int getPermission() {
 		return permission;

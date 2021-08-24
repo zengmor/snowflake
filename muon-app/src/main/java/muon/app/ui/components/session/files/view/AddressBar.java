@@ -5,6 +5,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ui.components.SkinnedTextField;
 import muon.app.ui.components.session.files.AddressBarComboBoxEditor;
@@ -15,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+@Slf4j
 public class AddressBar extends JPanel {
 	// private AddressBreadCrumbView addressBar;
 	private AddressBarBreadCrumbs addressBar;
@@ -84,11 +86,13 @@ public class AddressBar extends JPanel {
 			}
 		};
 		txtAddressBar.setEditor(cmdEdit);
-		System.out.println("Editor: " + txtAddressBar.getEditor());
+		//System.out.println("Editor: " + txtAddressBar.getEditor());
+		log.info("Editor: " + txtAddressBar.getEditor());
 		addressBar = new AddressBarBreadCrumbs(separator == '/', popupTriggeredListener);
 		addressBar.addActionListener(e -> {
 			if (a != null) {
-				System.out.println("Performing action");
+				//System.out.println("Performing action");
+				log.info("Performing action");
 				a.actionPerformed(new ActionEvent(this, 0, e.getActionCommand()));
 			}
 		});
@@ -190,12 +194,14 @@ public class AddressBar extends JPanel {
 	}
 
 	public void setText(String text) {
-		System.out.println("Setting text: " + text);
+		//System.out.println("Setting text: " + text);
+		log.info("Setting text: " + text);
 		updating = true;
 		txtAddressBar.setSelectedItem(text);
 		addressBar.setPath(text);
 		updating = false;
-		System.out.println("Setting text done: " + text);
+		log.info("Setting text done: " + text);
+		//System.out.println("Setting text done: " + text);
 	}
 
 	public void addActionListener(ActionListener e) {

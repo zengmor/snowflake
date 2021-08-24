@@ -213,7 +213,8 @@ public class SshTtyConnector implements DisposableTtyConnector {
 	}
 
 	private void setPtySize(Shell shell, int col, int row, int wp, int hp) {
-		System.out.println("Exec pty resized:- col: " + col + " row: " + row + " wp: " + wp + " hp: " + hp);
+		//System.out.println("Exec pty resized:- col: " + col + " row: " + row + " wp: " + wp + " hp: " + hp);
+		log.info("Exec pty resized:- col: " + col + " row: " + row + " wp: " + wp + " hp: " + hp);
 		if (shell != null) {
 			try {
 				shell.changeWindowDimensions(col, row, wp, hp);

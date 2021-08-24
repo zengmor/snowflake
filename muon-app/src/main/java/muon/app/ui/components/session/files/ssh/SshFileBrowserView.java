@@ -13,6 +13,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.common.FileInfo;
 import muon.app.common.FileSystem;
@@ -29,6 +30,7 @@ import muon.app.ui.components.session.files.view.DndTransferData;
 import muon.app.ui.components.session.files.view.DndTransferHandler;
 import util.PathUtils;
 
+@Slf4j
 public class SshFileBrowserView extends AbstractFileBrowserView {
 	private SshMenuHandler menuHandler;
 	private JPopupMenu addressPopup;
@@ -50,7 +52,8 @@ public class SshFileBrowserView extends AbstractFileBrowserView {
 			if (this.path != null && this.path.trim().length() < 1) {
 				this.path = null;
 			}
-			System.out.println("Path: " + path);
+			//System.out.println("Path: " + path);
+			log.info("Path: {}", path);
 		} else {
 			this.path = initialPath;
 		}
@@ -123,8 +126,9 @@ public class SshFileBrowserView extends AbstractFileBrowserView {
 		if (path.equals("/"))
 			return path;
 		if (path.endsWith("/")) {
-			String trim = path.substring(0, path.length() - 1);
-			System.out.println("Trimmed path: " + trim);
+			final String trim = path.substring(0, path.length() - 1);
+			//System.out.println("Trimmed path: " + trim);
+			log.info("Trimmed path: " + trim);
 			return trim;
 		}
 		return path;
@@ -143,7 +147,8 @@ public class SshFileBrowserView extends AbstractFileBrowserView {
 		}
 		if (list != null) {
 			final List<FileInfo> list2 = list;
-			System.out.println("New file list: " + list2);
+			//System.out.println("New file list: " + list2);
+			log.info("New file list: " + list2);
 			SwingUtilities.invokeLater(() -> {
 				addressBar.setText(path);
 				folderView.setItems(list2);
@@ -157,13 +162,15 @@ public class SshFileBrowserView extends AbstractFileBrowserView {
 
 	@Override
 	public void render(String path, boolean useCache) {
-		System.out.println("Rendering: " + path + " caching: " + useCache);
+		//System.out.println("Rendering: " + path + " caching: " + useCache);
+		log.info("Rendering: " + path + " caching: " + useCache);
 		this.path = path;
 		fileBrowser.getHolder().EXECUTOR.submit(() -> {
 			this.fileBrowser.disableUi();
 			try {
 				while (!fileBrowser.isCloseRequested()) {
-					System.out.println("Listing files now ...");
+					//System.out.println("Listing files now ...");
+					log.info("Listing files now ...");
 					try {
 						if (path == null) {
 							SshFileSystem sshfs = this.fileBrowser.getSSHFileSystem();

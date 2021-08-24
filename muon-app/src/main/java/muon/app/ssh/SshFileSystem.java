@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.common.FileInfo;
 import muon.app.common.FileSystem;
 import muon.app.common.FileType;
@@ -32,6 +33,7 @@ import net.schmizz.sshj.sftp.SFTPException;
 import net.schmizz.sshj.xfer.FilePermission;
 import util.PathUtils;
 
+@Slf4j
 public class SshFileSystem implements FileSystem {
 	public static final String PROTO_SFTP = "sftp";
 	private Object lock = new Object();
@@ -150,7 +152,8 @@ public class SshFileSystem implements FileSystem {
 
 	private List<FileInfo> listFiles(String path) throws Exception {
 		synchronized (this.ssh) {
-			System.out.println("Listing file: " + path);
+			//System.out.println("Listing file: " + path);
+			log.info("Listing file: " + path);
 			List<FileInfo> childs = new ArrayList<>();
 			try {
 				if (path == null || path.length() < 1) {
