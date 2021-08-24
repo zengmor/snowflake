@@ -5,13 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.common.*;
 import util.PathUtils;
 
+@Slf4j
 public class LocalFileSystem implements FileSystem {
 	public static final String PROTO_LOCAL_FILE = "local";
 
@@ -26,10 +26,10 @@ public class LocalFileSystem implements FileSystem {
 		}
 		Path p = f.toPath();
 		BasicFileAttributes attrs = Files.readAttributes(p, BasicFileAttributes.class);
-		FileInfo info = new FileInfo(f.getName(), path, f.length(),
-				f.isDirectory() ? FileType.Directory : FileType.File, f.lastModified(), -1, PROTO_LOCAL_FILE, "",
+		return new FileInfo(f.getName(), path, f.length(),
+				f.isDirectory() ? FileType.Directory : FileType.File,
+				f.lastModified(), -1, PROTO_LOCAL_FILE, "",
 				attrs.creationTime().toMillis(), "", f.isHidden());
-		return info;
 	}
 
 	@Override
@@ -45,21 +45,25 @@ public class LocalFileSystem implements FileSystem {
 		if (!path.endsWith(File.separator)) {
 			path = path + File.separator;
 		}
-		File[] childs = new File(path).listFiles();
-		List<FileInfo> list = new ArrayList<>();
+		final File[] childs = new File(path).listFiles();
 		if (childs == null || childs.length < 1) {
-			return list;
+			return new ArrayList<>();
 		}
-		for (File f : childs) {
-			try {
-				Path p = f.toPath();
-				BasicFileAttributes attrs = Files.readAttributes(p, BasicFileAttributes.class);
-				FileInfo info = new FileInfo(f.getName(), f.getAbsolutePath(), f.length(),
-						f.isDirectory() ? FileType.Directory : FileType.File, f.lastModified(), -1, PROTO_LOCAL_FILE,
-						"", attrs.creationTime().toMillis(), "", f.isHidden());
-				list.add(info);
-			} catch (Exception e) {
-				e.printStackTrace();
+
+		final List<FileInfo> list = new ArrayList<>();
+		for (final File f : childs) {
+			if (f.exists()) {
+				BasicFileAttributes attrs = null;
+				try {
+					attrs = Files.readAttributes(f.toPath(), BasicFileAttributes.class);
+				} catch (final Exception e) {
+					log.info("listing file: read file attributes failed with ", e);
+				}
+				list.add(new FileInfo(f.getName(), f.getAbsolutePath(), f.length(),
+						f.isDirectory() ? FileType.Directory : FileType.File,
+						f.lastModified(), -1, PROTO_LOCAL_FILE,
+						"", attrs.creationTime().toMillis(), "",
+						f.isHidden()));
 			}
 		}
 		return list;
