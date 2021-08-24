@@ -22,6 +22,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ui.AppWindow;
 import muon.app.ui.components.SkinnedScrollPane;
@@ -31,6 +32,7 @@ import util.FontAwesomeContants;
  * @author subhro
  *
  */
+@Slf4j
 public class SessionListPanel extends JPanel {
 	private DefaultListModel<SessionContentPanel> sessionListModel;
 	private JList<SessionContentPanel> sessionList;
@@ -68,7 +70,8 @@ public class SessionListPanel extends JPanel {
 						int y = e.getPoint().y;
 
 						if (x > r.x + r.width - 30 && x < r.x + r.width && y > r.y + 10 && y < r.y + r.height - 10) {
-							System.out.println("Clicked on: " + index);
+							//System.out.println("Clicked on: " + index);
+							log.info("Clicked on: {}", index);
 							removeSession(index);
 						}
 					}
@@ -102,7 +105,9 @@ public class SessionListPanel extends JPanel {
 		});
 
 		sessionList.addListSelectionListener(e -> {
-			System.out.println("called for index: " + sessionList.getSelectedIndex() + " " + e.getFirstIndex() + " "
+//			System.out.println("called for index: " + sessionList.getSelectedIndex() + " " + e.getFirstIndex() + " "
+//					+ e.getLastIndex() + e.getValueIsAdjusting());
+			log.info("called for index: " + sessionList.getSelectedIndex() + " " + e.getFirstIndex() + " "
 					+ e.getLastIndex() + e.getValueIsAdjusting());
 			// selectSession(sessionList.getSelectedIndex());
 			if (!e.getValueIsAdjusting()) {

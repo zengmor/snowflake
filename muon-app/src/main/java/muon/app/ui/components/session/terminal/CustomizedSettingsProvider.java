@@ -16,6 +16,7 @@ import com.jediterm.terminal.emulator.ColorPalette;
 import com.jediterm.terminal.ui.UIUtil;
 import com.jediterm.terminal.ui.settings.DefaultSettingsProvider;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.Settings;
 import util.FontUtils;
@@ -24,6 +25,7 @@ import util.FontUtils;
  * @author subhro
  *
  */
+@Slf4j
 public class CustomizedSettingsProvider extends DefaultSettingsProvider {
 	private ColorPalette palette;
 
@@ -124,7 +126,8 @@ public class CustomizedSettingsProvider extends DefaultSettingsProvider {
 
 	@Override
 	public Font getTerminalFont() {
-		System.out.println("Called terminal font: " + App.getGlobalSettings().getTerminalFontName());
+		//System.out.println("Called terminal font: " + App.getGlobalSettings().getTerminalFontName());
+		log.info("Called terminal font: " + App.getGlobalSettings().getTerminalFontName());
 		return FontUtils.loadTerminalFont(App.getGlobalSettings().getTerminalFontName()).deriveFont(Font.PLAIN,
 				App.getGlobalSettings().getTerminalFontSize());
 //		

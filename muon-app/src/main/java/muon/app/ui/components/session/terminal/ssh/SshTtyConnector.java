@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.jediterm.terminal.Questioner;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ssh.SshClient2;
 import muon.app.ui.components.session.SessionContentPanel;
@@ -24,6 +25,7 @@ import net.schmizz.sshj.connection.channel.direct.SessionChannel;
 import net.schmizz.sshj.transport.TransportException;
 import util.CollectionHelper;
 
+@Slf4j
 public class SshTtyConnector implements DisposableTtyConnector {
 	private InputStreamReader myInputStreamReader;
 	private InputStream myInputStream = null;
@@ -88,7 +90,8 @@ public class SshTtyConnector implements DisposableTtyConnector {
 			// channel.connect();
 
 			resizeImmediately();
-			System.out.println("Initiated");
+			//System.out.println("Initiated");
+			log.info("Terminal wrapper initiated");
 
 			if (initialCommand != null) {
 				myOutputStream.write((initialCommand + "\n").getBytes("utf-8"));
@@ -110,7 +113,8 @@ public class SshTtyConnector implements DisposableTtyConnector {
 	public void close() {
 		try {
 			stopFlag.set(true);
-			System.out.println("Terminal wrapper disconnecting");
+			//System.out.println("Terminal wrapper disconnecting");
+			log.info("Terminal wrapper disconnecting");
 			wr.disconnect();
 		} catch (Exception e) {
 		}

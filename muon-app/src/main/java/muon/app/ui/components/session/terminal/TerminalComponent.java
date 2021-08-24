@@ -19,6 +19,7 @@ import com.jediterm.terminal.ui.JediTermWidget;
 import com.jediterm.terminal.ui.TerminalPanelListener;
 import com.jediterm.terminal.ui.TerminalSession;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ui.components.ClosableTabContent;
 import muon.app.ui.components.ClosableTabbedPanel.TabTitle;
@@ -27,6 +28,7 @@ import muon.app.ui.components.session.SessionInfo;
 import muon.app.ui.components.session.terminal.ssh.DisposableTtyConnector;
 import muon.app.ui.components.session.terminal.ssh.SshTtyConnector;
 
+@Slf4j
 public class TerminalComponent extends JPanel implements ClosableTabContent {
 	private JRootPane rootPane;
 	private JPanel contentPane;
@@ -40,7 +42,9 @@ public class TerminalComponent extends JPanel implements ClosableTabContent {
 	public TerminalComponent(SessionInfo info, String name, String command, SessionContentPanel sessionContentPanel) {
 		setLayout(new BorderLayout());
 		//this.sessionContentPanel = sessionContentPanel;
-		System.out.println("Current terminal font: " + App.getGlobalSettings().getTerminalFontName());
+		//System.out.println("Current terminal font: " + App.getGlobalSettings().getTerminalFontName());
+		log.info("Current terminal font: {}", App.getGlobalSettings().getTerminalFontName());
+
 		this.name = name;
 		this.tabTitle = new TabTitle();
 		contentPane = new JPanel(new BorderLayout());
@@ -93,8 +97,9 @@ public class TerminalComponent extends JPanel implements ClosableTabContent {
 		term.setTerminalPanelListener(new TerminalPanelListener() {
 
 			@Override
-			public void onTitleChanged(String title) {
-				System.out.println("new title: " + title);
+			public void onTitleChanged(final String title) {
+				//System.out.println("new title: " + title);
+				log.info("new title: {}", title);
 				TerminalComponent.this.name = title;
 				SwingUtilities.invokeLater(() -> {
 					tabTitle.getCallback().accept(title);
@@ -103,7 +108,8 @@ public class TerminalComponent extends JPanel implements ClosableTabContent {
 
 			@Override
 			public void onSessionChanged(TerminalSession currentSession) {
-				System.out.println("currentSession: " + currentSession);
+				//System.out.println("currentSession: " + currentSession);
+				log.info("current session: {}", currentSession);
 			}
 
 			@Override

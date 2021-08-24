@@ -3,6 +3,7 @@ package muon.app.ui.components.session;
 import com.fasterxml.jackson.core.type.*;
 import com.fasterxml.jackson.databind.*;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.PasswordStore;
 
@@ -11,6 +12,7 @@ import java.util.*;
 import java.io.*;
 import java.nio.file.Paths;
 
+@Slf4j
 public class SessionStore {
 
 	public synchronized static SavedSessionTree load() {
@@ -26,12 +28,13 @@ public class SessionStore {
 			SavedSessionTree savedSessionTree = objectMapper.readValue(file, new TypeReference<SavedSessionTree>() {
 			});
 			try {
-				System.out.println("Loading passwords...");
+				//System.out.println("Loading passwords...");
+				log.info("Loading passwords...");
 				PasswordStore.getSharedInstance().populatePassword(savedSessionTree);
-				System.out.println("Loading passwords... done");
+				//System.out.println("Loading passwords... done");
+				log.info("Loading passwords... done");
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Loading passwords failed with ", e);
 			}
 			return savedSessionTree;
 		} catch (IOException e) {

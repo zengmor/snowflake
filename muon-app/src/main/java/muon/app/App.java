@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,6 +49,7 @@ import util.Win32DragHandler;
  * Hello world!
  *
  */
+@Slf4j
 public class App {
 	static {
 		System.setProperty("java.net.useSystemProxies", "true");
@@ -89,8 +91,8 @@ public class App {
 		Security.setProperty("networkaddress.cache.negative.ttl", "1");
 		Security.setProperty("crypto.policy", "unlimited");
 
-		System.out.println(System.getProperty("java.version"));
-
+		//System.out.println(System.getProperty("java.version"));
+		log.info("current java version: {}", System.getProperty("java.version"));
 		boolean firstRun = false;
 
 		File appDir = new File(CONFIG_DIR);
@@ -111,10 +113,12 @@ public class App {
 		}
 
 		if (settings.getEditors().size() == 0) {
-			System.out.println("Searching for known editors...");
+			//System.out.println("Searching for known editors...");
+			log.info("Searching for known editors...");
 			settings.setEditors(PlatformUtils.getKnownEditors());
 			saveSettings();
-			System.out.println("Searching for known editors...done");
+			log.info("Searching for known editors...done");
+			//System.out.println("Searching for known editors...done");
 		}
 
 		SKIN = settings.isUseGlobalDarkTheme() ? new AppSkinDark() : new AppSkinLight();
@@ -123,7 +127,8 @@ public class App {
 
 		try {
 			int maxKeySize = javax.crypto.Cipher.getMaxAllowedKeyLength("AES");
-			System.out.println("maxKeySize: " + maxKeySize);
+			//System.out.println("maxKeySize: " + maxKeySize);
+			log.info("the max key size is {}", maxKeySize);
 			if (maxKeySize < Integer.MAX_VALUE) {
 				JOptionPane.showMessageDialog(null, "Unlimited cryptography is not enabled in JVM");
 			}

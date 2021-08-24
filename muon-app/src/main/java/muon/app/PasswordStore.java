@@ -28,10 +28,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.ui.components.session.SavedSessionTree;
 import muon.app.ui.components.session.SessionFolder;
 import muon.app.ui.components.session.SessionInfo;
 
+@Slf4j
 public final class PasswordStore {
 	private static KeyStore KEY_STORE;
 	private static PasswordStore INSTANCE;
@@ -129,8 +131,8 @@ public final class PasswordStore {
 				.generateSecret(new PBEKeySpec(serializePasswordMap(this.passwordMap)));
 		KEY_STORE.setEntry("passwords", new SecretKeyEntry(generatedSecret), protParam);
 
-		System.out.println("Password protection: " + protParam.getProtectionAlgorithm());
-
+		//System.out.println("Password protection: " + protParam.getProtectionAlgorithm());
+		log.info("Password protection: " + protParam.getProtectionAlgorithm());
 		try (OutputStream out = new FileOutputStream(new File(App.CONFIG_DIR, "passwords.pfx"))) {
 			KEY_STORE.store(out, protParam.getPassword());
 		}

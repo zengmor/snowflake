@@ -10,6 +10,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ui.components.ClosableTabbedPanel;
 import muon.app.ui.components.session.Page;
@@ -18,6 +19,7 @@ import muon.app.ui.components.session.SessionInfo;
 import muon.app.ui.components.session.terminal.snippets.SnippetPanel;
 import util.FontAwesomeContants;
 
+@Slf4j
 public class TerminalHolder extends Page implements AutoCloseable {
 	private ClosableTabbedPanel tabs;
 //	private DefaultComboBoxModel<TerminalComponent> terminals;
@@ -50,7 +52,8 @@ public class TerminalHolder extends Page implements AutoCloseable {
 		TerminalComponent tc = new TerminalComponent(info, c + "", null, sessionContentPanel);
 		this.tabs.addTab(tc.getTabTitle(), tc);
 		long t2 = System.currentTimeMillis();
-		System.out.println("Terminal init in: " + (t2 - t1) + " ms");
+		//System.out.println("Terminal init in: " + (t2 - t1) + " ms");
+		log.info("Terminal init in {} ms ", (t2 - t1));
 
 //		this.terminals = new DefaultComboBoxModel<>();
 //		this.cmbTerminals = new JComboBox<>(terminals);
@@ -149,7 +152,8 @@ public class TerminalHolder extends Page implements AutoCloseable {
 			
 			@Override
 			public void ancestorAdded(AncestorEvent event) {
-				System.err.println("Terminal ancestor component shown");
+				//System.err.println("Terminal ancestor component shown");
+				log.error("Terminal ancestor component shown");
 				focusTerminal();
 			}
 		});
@@ -174,7 +178,8 @@ public class TerminalHolder extends Page implements AutoCloseable {
 
 	private void focusTerminal() {
 		tabs.requestFocusInWindow();
-		System.err.println("Terminal component shown");
+		//System.err.println("Terminal component shown");
+		log.error("Terminal component shown");
 		TerminalComponent comp = (TerminalComponent) tabs.getSelectedContent();
 		if (comp != null) {
 			comp.requestFocusInWindow();

@@ -41,10 +41,12 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ui.components.SkinnedSplitPane;
 import muon.app.ui.components.SkinnedTextField;
 
+@Slf4j
 public class NewSessionDlg extends JDialog implements ActionListener, TreeSelectionListener, TreeModelListener {
 
 	private static final long serialVersionUID = -1182844921331289546L;
@@ -530,10 +532,12 @@ public class NewSessionDlg extends JDialog implements ActionListener, TreeSelect
 		if (this.info.getHost() == null || this.info.getHost().length() < 1) {
 			JOptionPane.showMessageDialog(this, "No hostname provided");
 			this.info = null;
-			System.out.println("Returned");
+			//System.out.println("Returned");
+			log.info("Returned");
 			return;
 		} else {
-			System.out.println("Returned disposing");
+			//System.out.println("Returned disposing");
+			log.info("Returned disposing");
 			dispose();
 		}
 	}
@@ -546,7 +550,8 @@ public class NewSessionDlg extends JDialog implements ActionListener, TreeSelect
 
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
-		System.out.println("value changed");
+		//System.out.println("value changed");
+		log.info("value changed");
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 
 		if (node == null)
@@ -603,7 +608,8 @@ public class NewSessionDlg extends JDialog implements ActionListener, TreeSelect
 
 	@Override
 	public void treeNodesChanged(TreeModelEvent e) {
-		System.out.println("treeNodesChanged");
+		//System.out.println("treeNodesChanged");
+		log.info("Tree node changed");
 		// save();
 	}
 

@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ui.components.SkinnedTextField;
 import muon.app.ui.components.session.HopEntry;
@@ -41,6 +42,7 @@ import net.schmizz.sshj.userauth.method.AuthNone;
  * @author subhro
  *
  */
+@Slf4j
 public class SshClient2 implements Closeable {
 	private AtomicBoolean closed = new AtomicBoolean(false);
 	private SessionInfo info;
@@ -83,7 +85,8 @@ public class SshClient2 implements Closeable {
 
 	private void getAuthMethods(AtomicBoolean authenticated, List<String> allowedMethods)
 			throws OperationCancelledException {
-		System.out.println("Trying to get allowed authentication methods...");
+		//System.out.println("Trying to get allowed authentication methods...");
+		log.info("Trying to get all allowed authentication methods...");
 		try {
 			String user = promptUser();
 			if (user == null || user.length() < 1) {
@@ -94,10 +97,9 @@ public class SshClient2 implements Closeable {
 		} catch (OperationCancelledException e) {
 			throw e;
 		} catch (Exception e) {
-			for (String method : sshj.getUserAuth().getAllowedMethods()) {
-				allowedMethods.add(method);
-			}
-			System.out.println("List of allowed authentications: " + allowedMethods);
+			allowedMethods.addAll(sshj.getUserAuth().getAllowedMethods());
+			//System.out.println("List of allowed authentications: " + allowedMethods);
+			log.info("List of allowed authentications: {}", allowedMethods);
 		}
 	}
 
@@ -107,8 +109,9 @@ public class SshClient2 implements Closeable {
 			File keyFile = new File(info.getPrivateKeyFile());
 			if (keyFile.exists()) {
 				provider = sshj.loadKeys(info.getPrivateKeyFile(), passwordFinder);
-				System.out.println("Key provider: " + provider);
-				System.out.println("Key type: " + provider.getType());
+//				System.out.println("Key provider: " + provider);
+//				System.out.println("Key type: " + provider.getType());
+				log.info("Key Provider {} and Key Type {}", provider, provider.getType());
 			}
 		}
 
@@ -228,13 +231,14 @@ public class SshClient2 implements Closeable {
 
 			// loop over servers preferred authentication methods in the same
 			// order sent by server
-			for (String authMethod : allowedMethods) {
+			for (final String authMethod : allowedMethods) {
 				if (closed.get()) {
 					disconnect();
 					throw new OperationCancelledException();
 				}
 
-				System.out.println("Trying auth method: " + authMethod);
+				//System.out.println("Trying auth method: " + authMethod);
+				log.info("Trying auth method: {}", authMethod);
 
 				switch (authMethod) {
 				case "publickey":
