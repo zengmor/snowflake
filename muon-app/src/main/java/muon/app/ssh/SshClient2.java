@@ -85,7 +85,6 @@ public class SshClient2 implements Closeable {
 
 	private void getAuthMethods(AtomicBoolean authenticated, List<String> allowedMethods)
 			throws OperationCancelledException {
-		//System.out.println("Trying to get allowed authentication methods...");
 		log.info("Trying to get all allowed authentication methods...");
 		try {
 			String user = promptUser();
@@ -98,7 +97,6 @@ public class SshClient2 implements Closeable {
 			throw e;
 		} catch (Exception e) {
 			allowedMethods.addAll(sshj.getUserAuth().getAllowedMethods());
-			//System.out.println("List of allowed authentications: " + allowedMethods);
 			log.info("List of allowed authentications: {}", allowedMethods);
 		}
 	}
@@ -109,8 +107,6 @@ public class SshClient2 implements Closeable {
 			File keyFile = new File(info.getPrivateKeyFile());
 			if (keyFile.exists()) {
 				provider = sshj.loadKeys(info.getPrivateKeyFile(), passwordFinder);
-//				System.out.println("Key provider: " + provider);
-//				System.out.println("Key type: " + provider.getType());
 				log.info("Key Provider {} and Key Type {}", provider, provider.getType());
 			}
 		}
@@ -121,7 +117,7 @@ public class SshClient2 implements Closeable {
 		}
 
 		if (provider == null) {
-			throw new Exception("No suitable key providers");
+			throw new IOException("No suitable key providers");
 		}
 
 		sshj.authPublickey(promptUser(), provider);
@@ -162,7 +158,7 @@ public class SshClient2 implements Closeable {
 													// net.schmizz.sshj.userauth.password.PasswordUpdateProvider
 				return;
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.info("auth with password failed with ", e);
 				password = null;
 			}
 		}
@@ -187,20 +183,22 @@ public class SshClient2 implements Closeable {
 				sshj.connect(info.getHost(), info.getPort());
 			} else {
 				try {
-					System.out.println("Tunneling through...");
+					log.info("Tunneling through...");
 					tunnelThrough(hopStack);
-					System.out.println("adding host key verifier");
+
+					log.info("adding host key verifier");
 					this.sshj.addHostKeyVerifier(App.HOST_KEY_VERIFIER);
-					System.out.println("Host key verifier added");
+					log.info("Host key verifier added");
+
 					if (this.info.getJumpType() == JumpType.TcpForwarding) {
-						System.out.println("tcp forwarding...");
+						log.info("tcp forwarding...");
 						this.connectViaTcpForwarding();
 					} else {
-						System.out.println("port forwarding...");
+						log.info("port forwarding...");
 						this.connectViaPortForwarding();
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.error("tunneling failed with ", e);
 					disconnect();
 					throw new IOException(e);
 				}
@@ -208,10 +206,10 @@ public class SshClient2 implements Closeable {
 
 			// sshj.setRemoteCharset(remoteCharset);
 
-			if (closed.get()) {
-				disconnect();
-				throw new OperationCancelledException();
-			}
+//			if (closed.get()) {
+//				disconnect();
+//				throw new OperationCancelledException();
+//			}
 
 			// Connection established, now find out supported authentication
 			// methods
@@ -224,10 +222,10 @@ public class SshClient2 implements Closeable {
 				return;
 			}
 
-			if (closed.get()) {
-				disconnect();
-				throw new OperationCancelledException();
-			}
+//			if (closed.get()) {
+//				disconnect();
+//				throw new OperationCancelledException();
+//			}
 
 			// loop over servers preferred authentication methods in the same
 			// order sent by server
@@ -471,7 +469,7 @@ public class SshClient2 implements Closeable {
 
 	public void disconnect() {
 		if (closed.get()) {
-			System.out.println("Already closed: " + info);
+			log.info("Already closed: {}", info);
 			return;
 		}
 		closed.set(true);

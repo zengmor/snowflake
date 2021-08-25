@@ -58,6 +58,7 @@ public class LocalFileSystem implements FileSystem {
 					attrs = Files.readAttributes(f.toPath(), BasicFileAttributes.class);
 				} catch (final Exception e) {
 					log.info("listing file: read file attributes failed with ", e);
+					continue;
 				}
 				list.add(new FileInfo(f.getName(), f.getAbsolutePath(), f.length(),
 						f.isDirectory() ? FileType.Directory : FileType.File,
