@@ -1503,7 +1503,8 @@ public class TerminalPanel extends JComponent
 
 	@Override
 	public void setWindowTitle(String name) {
-		System.out.println("########## name: " + name);
+		//System.out.println("########## name: " + name);
+		LOG.info("########## name: " + name);
 		myWindowTitle = name;
 		if (myTerminalPanelListener != null) {
 			myTerminalPanelListener.onTitleChanged(myWindowTitle);

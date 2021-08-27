@@ -8,10 +8,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.ui.components.session.SessionInfo;
 import net.schmizz.sshj.connection.channel.direct.PTYMode;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -21,6 +24,7 @@ import net.schmizz.sshj.connection.channel.direct.Session.Command;
  * @author subhro
  *
  */
+@Slf4j
 public class RemoteSessionInstance {
 	private SshClient2 ssh;
 	private SshFileSystem sshFs;
@@ -52,7 +56,8 @@ public class RemoteSessionInstance {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				log.error("executing command failed with ", e);
 			}
 			return 1;
 		}
@@ -72,18 +77,10 @@ public class RemoteSessionInstance {
 		ByteArrayOutputStream berr = error == null ? null : new ByteArrayOutputStream();
 		int ret = execBin(command, stopFlag, bout, berr);
 		if (output != null) {
-			try {
-				output.append(new String(bout.toByteArray(), "utf-8"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+			output.append(bout.toString(StandardCharsets.UTF_8));
 		}
 		if (error != null) {
-			try {
-				error.append(new String(berr.toByteArray(), "utf-8"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+			error.append(berr.toString(StandardCharsets.UTF_8));
 		}
 		return ret;
 	}
@@ -93,8 +90,7 @@ public class RemoteSessionInstance {
 			if (this.closed.get()) {
 				throw new OperationCancelledException();
 			}
-			System.out.println(Thread.currentThread().getName());
-			System.out.println(command);
+			log.info("current thread : {} and command : {}", Thread.currentThread().getName(), command);
 			if (stopFlag.get()) {
 				return -1;
 			}
@@ -107,7 +103,8 @@ public class RemoteSessionInstance {
 //				session.allocatePTY(App.getGlobalSettings().getTerminalType(),
 //						80, 24, 0, 0, Collections.<PTYMode, Integer>emptyMap());
 					try (final Command cmd = session.exec(command)) {
-						System.out.println("Command and Session started");
+						//System.out.println("Command and Session started");
+						log.info("Command and Session started");
 
 						InputStream in = cmd.getInputStream();
 						InputStream err = cmd.getErrorStream();
@@ -116,7 +113,7 @@ public class RemoteSessionInstance {
 
 						do {
 							if (stopFlag.get()) {
-								System.out.println("stopflag");
+								log.info("stop flag here");
 								break;
 							}
 
@@ -160,12 +157,12 @@ public class RemoteSessionInstance {
 							// Thread.sleep(500);
 						} while (cmd.isOpen());
 
-						System.out.println(cmd.isOpen() + " " + cmd.isEOF() + " " + cmd.getExitStatus());
+						//System.out.println(cmd.isOpen() + " " + cmd.isEOF() + " " + cmd.getExitStatus());
 						// System.out.println((char)in.read());
 
 						// System.out.println(output + " " + error);
-
-						System.out.println("Command and Session closed");
+						log.info(cmd.isOpen() + " " + cmd.isEOF() + " " + cmd.getExitStatus());
+						log.info("Command and Session closed");
 
 						cmd.close();
 						return cmd.getExitStatus();

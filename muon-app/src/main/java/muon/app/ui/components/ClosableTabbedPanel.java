@@ -17,9 +17,11 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import util.FontAwesomeContants;
 
+@Slf4j
 public class ClosableTabbedPanel extends JPanel {
 	private Color unselectedBg = App.SKIN.getSelectedTabColor(),
 			selectedBg = App.SKIN.getDefaultBackground();// App.SKIN.getDefaultBorderColor();//
@@ -89,7 +91,8 @@ public class ClosableTabbedPanel extends JPanel {
 		btn.setForeground(App.SKIN.getInfoTextForeground());
 //		popup.setInvoker(btn);
 		btn.addActionListener(e -> {
-			System.out.println("Callback called");
+			//System.out.println("Callback called");
+			log.info("callback on new tab invoked");
 			newTabCallback.accept(btn);
 			// popup.show(btn, 0, btn.getHeight());
 		});

@@ -39,6 +39,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.tukaani.xz.XZInputStream;
 
 import muon.app.App;
@@ -54,6 +55,7 @@ import util.LayoutUtilities;
  * @author subhro
  *
  */
+@Slf4j
 public class LogContent extends JPanel implements ClosableTabContent {
 	private SessionContentPanel holder;
 	private String remoteFile;

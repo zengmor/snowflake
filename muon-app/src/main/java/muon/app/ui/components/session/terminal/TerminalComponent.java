@@ -86,7 +86,8 @@ public class TerminalComponent extends JPanel implements ClosableTabContent {
 
 		term = new CustomJediterm(new CustomizedSettingsProvider());
 		term.addListener((e) -> {
-			System.out.println("Disconnected");
+			//System.out.println("Disconnected");
+			log.info("Disconnected");
 			SwingUtilities.invokeLater(() -> {
 				contentPane.add(reconnectionBox, BorderLayout.NORTH);
 				contentPane.revalidate();
@@ -140,7 +141,8 @@ public class TerminalComponent extends JPanel implements ClosableTabContent {
 //
 	@Override
 	public boolean close() {
-		System.out.println("Closing terminal..." + name);
+		//System.out.println("Closing terminal..." + name);
+		log.info("Closing terminal... " + name);
 		this.term.close();
 		return true;
 	}
