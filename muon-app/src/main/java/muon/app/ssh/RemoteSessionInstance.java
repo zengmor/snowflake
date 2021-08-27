@@ -36,7 +36,7 @@ public class RemoteSessionInstance {
 		this.sshFs = new SshFileSystem(this.ssh);
 	}
 
-	public int exec(String command, Function<Command, Integer> callback, boolean pty) throws Exception {
+	public int exec(String command, final ToIntFunction<Command> callback, boolean pty) throws Exception {
 		synchronized (this.ssh) {
 			if (this.closed.get()) {
 				throw new OperationCancelledException();
@@ -51,7 +51,7 @@ public class RemoteSessionInstance {
 						session.allocatePTY("vt100", 80, 24, 0, 0, Collections.<PTYMode, Integer>emptyMap());
 					}
 					try (final Command cmd = session.exec(command)) {
-						return callback.apply(cmd);
+						return callback.applyAsInt(cmd);
 					}
 				}
 
@@ -106,61 +106,8 @@ public class RemoteSessionInstance {
 						//System.out.println("Command and Session started");
 						log.info("Command and Session started");
 
-						InputStream in = cmd.getInputStream();
-						InputStream err = cmd.getErrorStream();
+						writeCommandToOutputAndError(cmd, stopFlag, bout, berr);
 
-						byte[] b = new byte[8192];
-
-						do {
-							if (stopFlag.get()) {
-								log.info("stop flag here");
-								break;
-							}
-
-							// System.out.println(in.available() + " " +
-							// err.available());
-							if (in.available() > 0) {
-								int m = in.available();
-								while (m > 0) {
-									int x = in.read(b, 0, m > b.length ? b.length : m);
-									if (x == -1) {
-										break;
-									}
-									m -= x;
-									if (bout != null) {
-										bout.write(b, 0, x);
-									}
-
-								}
-							}
-
-							if (err.available() > 0) {
-								int m = err.available();
-								while (m > 0) {
-									int x = err.read(b, 0, m > b.length ? b.length : m);
-									if (x == -1) {
-										break;
-									}
-									m -= x;
-									if (berr != null) {
-										berr.write(b, 0, x);
-									}
-
-								}
-							}
-
-//						x = err.read(b);
-//						if (x > 0) {
-//							berr.write(b, 0, x);
-//						}
-
-							// Thread.sleep(500);
-						} while (cmd.isOpen());
-
-						//System.out.println(cmd.isOpen() + " " + cmd.isEOF() + " " + cmd.getExitStatus());
-						// System.out.println((char)in.read());
-
-						// System.out.println(output + " " + error);
 						log.info(cmd.isOpen() + " " + cmd.isEOF() + " " + cmd.getExitStatus());
 						log.info("Command and Session closed");
 
@@ -173,6 +120,95 @@ public class RemoteSessionInstance {
 			}
 			return 1;
 		}
+	}
+
+
+	public int execBin(String command, AtomicBoolean stopFlag, OutputStream bout, OutputStream berr, boolean elavated)
+			throws Exception {
+		if (!elavated) {
+			return execBin(command, stopFlag, bout, berr);
+		}
+		final String prompt = "hello-114514-1919810:";
+		final String fullCommand = "sudo -S -p '" + prompt + "' " + command;
+
+		synchronized (this.ssh) {
+			if (this.closed.get()) {
+				throw new OperationCancelledException();
+			}
+			try {
+				if (!ssh.isConnected()) {
+					ssh.connect();
+				}
+				try (Session session = ssh.openSession()) {
+					session.setAutoExpand(true);
+
+					try (final Command cmd = session.exec(fullCommand)) {
+						log.info("Command and Session started");
+
+						char[] buf = new char[8196];
+
+						writeCommandToOutputAndError(cmd, stopFlag, bout, berr);
+
+						log.info(cmd.isOpen() + " " + cmd.isEOF() + " " + cmd.getExitStatus());
+						log.info("Command and Session closed");
+
+						cmd.close();
+						return cmd.getExitStatus();
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return -1;
+	}
+
+	private void writeCommandToOutputAndError(final Command command,
+											  final AtomicBoolean stop,
+											  final OutputStream bout,
+											  final OutputStream berr) throws IOException {
+		InputStream in = command.getInputStream();
+		InputStream err = command.getErrorStream();
+
+		byte[] b = new byte[8192];
+
+		do {
+			if (stop.get()) {
+				log.info("stop flag here");
+				break;
+			}
+
+			if (in.available() > 0) {
+				int m = in.available();
+				while (m > 0) {
+					int x = in.read(b, 0, Math.min(m, b.length));
+					if (x == -1) {
+						break;
+					}
+					m -= x;
+					if (bout != null) {
+						bout.write(b, 0, x);
+					}
+
+				}
+			}
+
+			if (err.available() > 0) {
+				int m = err.available();
+				while (m > 0) {
+					int x = err.read(b, 0, Math.min(m, b.length));
+					if (x == -1) {
+						break;
+					}
+					m -= x;
+					if (berr != null) {
+						berr.write(b, 0, x);
+					}
+
+				}
+			}
+
+		} while (command.isOpen());
 	}
 
 	/**

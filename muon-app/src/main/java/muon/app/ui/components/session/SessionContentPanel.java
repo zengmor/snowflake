@@ -279,7 +279,7 @@ public class SessionContentPanel extends JPanel implements PageHolder, CachedCre
 				e.printStackTrace();
 			}
 			try {
-				this.cachedSessions.forEach(c -> c.close());
+				this.cachedSessions.forEach(RemoteSessionInstance::close);
 			} catch (Exception e2) {
 				e2.printStackTrace();
 			}
