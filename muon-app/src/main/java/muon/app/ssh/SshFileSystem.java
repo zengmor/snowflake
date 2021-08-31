@@ -222,13 +222,15 @@ public class SshFileSystem implements FileSystem {
 
 	@Override
 	public String getHome() throws Exception {
-		System.out.println("Getting home directory... on " + Thread.currentThread().getName());
+		//System.out.println("Getting home directory... on " + Thread.currentThread().getName());
+		log.info("Getting home directory... on " + Thread.currentThread().getName());
 		if (home != null) {
 			return home;
 		}
 
 		synchronized (ssh) {
-			System.out.println("Getting home directory");
+			//System.out.println("Getting home directory");
+			log.info("Getting home directory");
 			ensureConnected();
 			this.home = sftp.canonicalize("");
 			return this.home;

@@ -39,6 +39,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ui.components.SkinnedScrollPane;
 import muon.app.ui.components.SkinnedTextField;
@@ -52,6 +53,7 @@ import util.ScriptLoader;
  * @author subhro
  *
  */
+@Slf4j
 public class SearchPanel extends Page {
 	private JTextField txtName;
 	private JComboBox<String> cmbSize, cmbSizeUnit;
@@ -213,7 +215,8 @@ public class SearchPanel extends Page {
 			disableButtons();
 		});
 
-		System.out.println("Starting search.. ");
+		//System.out.println("Starting search.. ");
+		log.info("Starting search");
 		try {
 //            SshClient client = this.holder.getSshFileSystem().getWrapper();
 //            if (!client.isConnected()) {
@@ -231,16 +234,19 @@ public class SearchPanel extends Page {
 			scriptBuffer.append(searchScript);
 
 			String findCmd = scriptBuffer.toString();
-			System.out.println(findCmd);
+			//System.out.println(findCmd);
+			log.info("findCmd is {}", findCmd);
 
 			StringBuilder output = new StringBuilder();
 
 			if (holder.getRemoteSessionInstance().exec(findCmd, stopFlag,
 					output) != 0) {
-				System.out.println("Error in search");
+				//System.out.println("Error in search");
+				log.error("Error in search");
 			}
 
-			System.out.println("search output\n" + output);
+			//System.out.println("search output\n" + output);
+			log.info("search output \n {}", output);
 
 			String lines[] = output.toString().split("\n");
 			SwingUtilities.invokeLater(() -> {

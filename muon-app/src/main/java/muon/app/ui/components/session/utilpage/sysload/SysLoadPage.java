@@ -15,6 +15,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.ui.components.session.SessionContentPanel;
 import muon.app.ui.components.session.utilpage.UtilPageItemView;
@@ -23,6 +24,7 @@ import muon.app.ui.components.session.utilpage.UtilPageItemView;
  * @author subhro
  *
  */
+@Slf4j
 public class SysLoadPage extends UtilPageItemView {
 	private SystemLoadPanel systemLoadPanel;
 	private JSpinner spInterval;
@@ -50,7 +52,8 @@ public class SysLoadPage extends UtilPageItemView {
 					});
 					return;
 				}
-				System.out.println("Getting system metrics");
+				//System.out.println("Getting system metrics");
+				log.info("Getting system metrics");
 				this.metrics
 						.updateMetrics(this.holder.getRemoteSessionInstance());
 				if ("Linux".equals(this.metrics.getOS())) {
@@ -116,7 +119,8 @@ public class SysLoadPage extends UtilPageItemView {
 		spInterval.setMaximumSize(spInterval.getPreferredSize());
 		spInterval.addChangeListener(e -> {
 			int interval = (Integer) spInterval.getValue();
-			System.out.println("New interval: " + interval);
+			//System.out.println("New interval: " + interval);
+			log.info("New Interval {}", interval);
 			this.sleepInterval.set(interval);
 			timer.stop();
 			timer.setDelay(this.sleepInterval.get() * 1000);

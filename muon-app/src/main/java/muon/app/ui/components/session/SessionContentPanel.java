@@ -22,6 +22,7 @@ import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 
+import lombok.extern.slf4j.Slf4j;
 import muon.app.App;
 import muon.app.common.FileInfo;
 import muon.app.common.FileSystem;
@@ -48,6 +49,7 @@ import util.LayoutUtilities;
  * @author subhro
  *
  */
+@Slf4j
 public class SessionContentPanel extends JPanel implements PageHolder, CachedCredentialProvider {
 	private SessionInfo info;
 	private CardLayout cardLayout;
@@ -193,7 +195,8 @@ public class SessionContentPanel extends JPanel implements PageHolder, CachedCre
 			this.disabledPanel.startAnimation(stopFlag);
 			// this.disabledPanel.btn.setVisible(true);
 			this.rootPane.setGlassPane(this.disabledPanel);
-			System.out.println("Showing disable panel");
+			//System.out.println("Showing disable panel");
+			log.info("Showing disable panel");
 			this.disabledPanel.setVisible(true);
 		});
 	}
@@ -201,7 +204,8 @@ public class SessionContentPanel extends JPanel implements PageHolder, CachedCre
 	public void enableUi() {
 		SwingUtilities.invokeLater(() -> {
 			this.disabledPanel.stopAnimation();
-			System.out.println("Hiding disable panel");
+			//System.out.println("Hiding disable panel");
+			log.info("Hiding disable panel");
 			this.disabledPanel.setVisible(false);
 		});
 	}
