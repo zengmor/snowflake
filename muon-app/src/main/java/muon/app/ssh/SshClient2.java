@@ -53,6 +53,8 @@ public class SshClient2 implements Closeable {
 	private SshClient2 previousHop;
 	private ServerSocket ss;
 
+	//30000 ms
+	private static final int CONNECTION_TIMEOUT = 30000;
 	/**
 	 * O
 	 * 
@@ -176,7 +178,8 @@ public class SshClient2 implements Closeable {
 		this.inputBlocker.blockInput();
 		try {
 			sshj = new SSHClient();
-
+			sshj.setConnectTimeout(CONNECTION_TIMEOUT);
+			sshj.setTimeout(CONNECTION_TIMEOUT);
 			if (hopStack.isEmpty()) {
 				this.setupProxyAndSocketFactory();
 				this.sshj.addHostKeyVerifier(App.HOST_KEY_VERIFIER);
